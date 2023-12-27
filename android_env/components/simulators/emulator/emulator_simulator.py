@@ -279,6 +279,7 @@ class EmulatorSimulator(base_simulator.BaseSimulator):
     """
     assert self._snapshot_stub is not None
     snapshot_name = request.args.get('snapshot_name', _DEFAULT_SNAPSHOT_NAME)
+    # print(snapshot_name)
     snapshot_list = self._snapshot_stub.ListSnapshots(
         snapshot_service_pb2.SnapshotFilter(
             statusFilter=snapshot_service_pb2.SnapshotFilter.LoadStatus.All

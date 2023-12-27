@@ -24,7 +24,7 @@ import re
 import threading
 from typing import Any
 
-from absl import logging
+import logging
 from android_env.components import adb_call_parser as adb_call_parser_lib
 from android_env.components import app_screen_checker
 from android_env.components import dumpsys_thread
@@ -34,7 +34,8 @@ from android_env.components import setup_step_interpreter
 from android_env.proto import task_pb2
 import dm_env
 import numpy as np
-
+global click
+click = 0
 
 class TaskManager:
   """Handles all events and information related to the task."""
@@ -47,7 +48,7 @@ class TaskManager:
       max_failed_current_activity: int = 10,
       extras_max_buffer_size: int = 100,
   ):
-    """Controls task-relevant events and information.
+    """Controls task-relevant events and information[[].
 
     Args:
       task: A task proto defining the RL task.
@@ -151,7 +152,7 @@ class TaskManager:
     """Performs one RL step."""
 
     self._stats['episode_steps'] = 0
-
+    self._logcat_thread.clear()
     self._logcat_thread.line_ready().wait()
     with self._lock:
       extras = self._get_current_extras()
@@ -200,11 +201,13 @@ class TaskManager:
     if self._dumpsys_thread.check_user_exited():
       self._increment_bad_state()
       self._stats['reset_count_user_exited'] += 1
-      logging.warning('User exited the task. Truncating the episode.')
+      logging.info('User exited the task. Truncating the episode.')
       logging.info('************* END OF EPISODE *************')
       return dm_env.truncation
 
     # Check if episode has ended
+    episode_end = self._latest_values['episode_end']
+    logging.info(f"Episode_end : {episode_end}")
     if self._latest_values['episode_end']:
       self._stats['reset_count_episode_end'] += 1
       logging.info('End of episode from logcat! Ending episode.')
@@ -296,12 +299,17 @@ class TaskManager:
 
     # RewardEvent listeners
     for reward_event in regexps.reward_event:
-
+      print(len(regexps.reward_event))
       def get_reward_event_handler(reward):
         def _reward_event_handler(event, match):
+          global click
+          logging.error(f"Total_Clicked: {str(click+1)} reward: {str(reward)}")
+          click += 1
           del event, match
           with self._lock:
             self._latest_values['reward'] += reward
+            latest_reward = self._latest_values['reward']
+            logging.error(f"Reward added: {latest_reward}")
         return _reward_event_handler
 
       listeners.append(logcat_thread.EventListener(

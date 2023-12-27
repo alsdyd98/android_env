@@ -69,7 +69,8 @@ class LogcatThread:
   def line_ready(self) -> threading.Event:
     """Indicates whether all listeners have been notified for a given line."""
     return self._line_ready
-
+  def clear(self):
+    self._log_stream.clear_stream()
   def pause(self):
     self._log_stream.pause_stream()
 

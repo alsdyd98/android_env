@@ -22,7 +22,7 @@ import threading
 import time
 from typing import Any
 
-from absl import logging
+import logging
 from android_env.components import action_type as action_type_lib
 from android_env.components import adb_call_parser
 from android_env.components import errors
@@ -483,6 +483,7 @@ class Coordinator:
     """
     self._task_manager.stop()
     response = self._simulator.load_state(request)
+    # logging.critical(f"Response: {response}")
     self._task_manager.start(
         adb_call_parser_factory=self._create_adb_call_parser,
         log_stream=self._simulator.create_log_stream(),

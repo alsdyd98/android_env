@@ -28,6 +28,9 @@ class LogStream(metaclass=abc.ABCMeta):
     self._verbose = verbose
     self._filters = []
     self._should_stream = threading.Event()
+  def clear_stream(self) -> None:
+    self._get_stream_output()
+    logging.error("log cleared")
 
   def get_stream_output(self) -> Generator[str, None, None]:
     """Starts log process and returns the stream of logs."""

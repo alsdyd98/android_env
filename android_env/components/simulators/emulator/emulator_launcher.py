@@ -151,7 +151,7 @@ class EmulatorLauncher:
         '-no-audio',
         '-show-kernel',
         '-verbose',
-        '-read-only',
+        # '-read-only',
         '-avd',
         self._avd_name,
     ] + grpc_port + run_headless + ports + snapshot + network_args
